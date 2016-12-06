@@ -19,6 +19,7 @@
     "supervisor": "0.9.1"
   },
   "scripts": {
+    "test": "./test.sh"
   },
   "repository": "git@github.com:buffpojken/hooch.git",
   "contributors": [
