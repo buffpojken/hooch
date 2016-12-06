@@ -4,7 +4,8 @@
   "description": "An activity-based authorization framework based on Promises (using Bluebird)",
   "main": "index.js",
   "dependencies": {
-    "bluebird": "3.3.4",   
+    "bluebird": "3.3.4",
+    "lodash": "^4.17.2",
     "winston": "2.2.0"
   },
   "engines": {
@@ -16,6 +17,7 @@
     "should": "8.2.2",
     "sinon": "^1.17.3",
     "supertest": "1.1.0",
+    "sequelize": "^3.27.0",
     "supervisor": "0.9.1"
   },
   "scripts": {

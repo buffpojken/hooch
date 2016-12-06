@@ -1,31 +1,58 @@
-{
-  "name": "hooch",
-  "version": "0.0.1",
-  "description": "An activity-based authorization framework based on Promises (using Bluebird)",
-  "main": "index.js",
-  "dependencies": {
-    "bluebird": "3.3.4",   
-    "winston": "2.2.0"
-  },
-  "engines": {
-    "node": "6.6.0"
-  },
-  "devDependencies": {
-    "jsdoc": "^3.4.0",
-    "mocha": "2.4.5",
-    "should": "8.2.2",
-    "sinon": "^1.17.3",
-    "supertest": "1.1.0",
-    "supervisor": "0.9.1"
-  },
-  "scripts": {
-  },
-  "repository": "git@github.com:buffpojken/hooch.git",
-  "contributors": [
-    {
-      "name": "Daniel Sundström",
-      "email": "daniel.sundstrom@lineducation.se",
-      "url": "www.danielsundstrom.com"
+"use strict";
+const _           = require('lodash')
+const Promise     = require('bluebird')
+try{
+  var Sequelize   = require('sequelize')  
+}catch(e){
+  var Sequelize   = null;
+}
+
+let library = {};
+
+let resolveIdentity = function(item){
+  if(Sequelize){
+    // This is an actual Sequelize-model
+    if(item instanceof Sequelize.Model){
+      return item
     }
-  ]
+  }else{
+
+  }
+}
+
+let permit = ({activity = null, forItem = null, givenThat = null} = {}) => {
+  if(!activity || !forItem || !givenThat){ throw new Error("hooch#permit is missing a parameter. This is a fatal error due to security concerns.") }
+  if(!library[activity]){
+    library[activity] = {}
+  }
+
+  let identity = resolveIdentity(forItem)
+
+  if(!library[activity][identity]){
+    library[activity][identity] = [];
+  }
+
+  library[activity][identity].push(givenThat)
+}
+
+let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
+  return Promise.resolve(forItem).then(item => {
+
+  })
+}
+
+// hooch.allowed({user: user, isAllowedTo: "edit.circle", forItem: itemOrPromise}).then(item => {
+
+// }).catch(hooch.AuthorizationError, function(exception) => {
+
+// })
+
+function AuthorizationError() {
+      this.error = true;
+};
+AuthorizationError.prototype = Object.create(Error.prototype);
+
+module.exports = {
+  permit: permit, 
+  AuthorizationError: AuthorizationError
 }
