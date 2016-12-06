@@ -37,7 +37,7 @@ let permit = ({activity = null, forItem = null, givenThat = null} = {}) => {
 
 let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
   return Promise.resolve(forItem).then(item => {
-
+    
   })
 }
 
