@@ -37,7 +37,15 @@ let permit = ({activity = null, forItem = null, givenThat = null} = {}) => {
 
 let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
   return Promise.resolve(forItem).then(item => {
-    
+    if(library[isAllowedTo]){
+      return Promise.all([item, library[isAllowedTo]])
+    }else{
+      return Promise.all([item, []])
+    }
+  }).spread((item, permits) => {
+    return Promise.reduce(permits, function(returnValue, permit){
+      
+    }, false);
   })
 }
 
