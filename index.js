@@ -1,6 +1,7 @@
 "use strict";
 const _           = require('lodash')
 const Promise     = require('bluebird')
+const assert      = require('assert');
 try{
   var Sequelize   = require('sequelize')  
 }catch(e){
@@ -14,9 +15,11 @@ let resolveIdentity = function(item){
     // This is an actual Sequelize-model
     if(item instanceof Sequelize.Model){
       return item
+    }else{
+      return item
     }
   }else{
-
+    return item;
   }
 }
 
@@ -36,24 +39,25 @@ let permit = ({activity = null, forItem = null, givenThat = null} = {}) => {
 }
 
 let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
+  if(!user || !isAllowedTo || !forItem){
+    throw new Error("hooch#allowed is missing one or more parameters. This is a fatal error due to security concerns.")
+  }
   return Promise.resolve(forItem).then(item => {
-    if(library[isAllowedTo]){
-      return Promise.all([item, library[isAllowedTo]])
+    if(library[isAllowedTo] && library[isAllowedTo][item]){
+      return Promise.all([item, library[isAllowedTo][item]])
     }else{
       return Promise.all([item, []])
     }
   }).spread((item, permits) => {
     return Promise.reduce(permits, function(returnValue, permit){
-      
+      return Promise.resolve(permit(item, user, isAllowedTo)).then(res => {
+        assert(typeof(res) === "boolean"); 
+        returnValue = res; 
+        return returnValue;
+      })
     }, false);
   })
 }
-
-// hooch.allowed({user: user, isAllowedTo: "edit.circle", forItem: itemOrPromise}).then(item => {
-
-// }).catch(hooch.AuthorizationError, function(exception) => {
-
-// })
 
 function AuthorizationError() {
       this.error = true;
@@ -62,5 +66,6 @@ AuthorizationError.prototype = Object.create(Error.prototype);
 
 module.exports = {
   permit: permit, 
+  allow: allowed,
   AuthorizationError: AuthorizationError
 }
