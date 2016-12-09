@@ -10,11 +10,15 @@ try{
 
 let library = {};
 
+// Expand this to include a context based on wether we're setting a permit
+// or checking a permit!
 let resolveIdentity = function(item){
   if(Sequelize){
     // This is an actual Sequelize-model
     if(item instanceof Sequelize.Model){
       return item
+    }else if(item.Model && item.Model instanceof Sequelize.Model){
+      return item.Model
     }else{
       return item
     }
@@ -22,6 +26,7 @@ let resolveIdentity = function(item){
     return item;
   }
 }
+
 
 let permit = ({activity = null, forItem = null, givenThat = null} = {}) => {
   if(!activity || !forItem || !givenThat){ throw new Error("hooch#permit is missing a parameter. This is a fatal error due to security concerns.") }
@@ -43,8 +48,9 @@ let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
     throw new Error("hooch#allowed is missing one or more parameters. This is a fatal error due to security concerns.")
   }
   return Promise.resolve(forItem).then(item => {
-    if(library[isAllowedTo] && library[isAllowedTo][item]){
-      return Promise.all([item, library[isAllowedTo][item]])
+    let identity = resolveIdentity(item);
+    if(library[isAllowedTo] && library[isAllowedTo][identity]){
+      return Promise.all([item, library[isAllowedTo][identity]])
     }else{
       return Promise.all([item, []])
     }
@@ -59,6 +65,10 @@ let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
   })
 }
 
+let _reset = () => {
+  library = {}
+}
+
 function AuthorizationError() {
       this.error = true;
 };
@@ -67,5 +77,6 @@ AuthorizationError.prototype = Object.create(Error.prototype);
 module.exports = {
   permit: permit, 
   allow: allowed,
+  reset: _reset,
   AuthorizationError: AuthorizationError
 }

@@ -34,6 +34,16 @@ describe('Hooch', function(){
 		})
 	});
 
-	// Test that missing or nullifying an argument should error out!
+	it('should reject null arguments', function(){
+		assert.throws(function(){
+			hooch.allow({user: null, isAllowedTo: 'undefined.permit', forItem: "something"})		
+		})
+	})
+
+	it('should reject missing arguments', function(){
+		assert.throws(function(){
+			hooch.allow({isAllowedTo: 'undefined.permit', forItem: "something"})		
+		})
+	})
 
 });
