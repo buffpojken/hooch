@@ -2,22 +2,18 @@
 const _           = require('lodash')
 const Promise     = require('bluebird')
 const assert      = require('assert');
-try{
-  var Sequelize   = require('sequelize')  
-}catch(e){
-  var Sequelize   = null;
-}
 
 let library = {};
 
 // Expand this to include a context based on wether we're setting a permit
 // or checking a permit!
 let resolveIdentity = function(item){
-  if(Sequelize){
+
+  if(module.exports.sequelize){
     // This is an actual Sequelize-model
-    if(item instanceof Sequelize.Model){
+    if(item instanceof module.exports.sequelize.Sequelize.Model){
       return item
-    }else if(item.Model && item.Model instanceof Sequelize.Model){
+    }else if(item.Model && item.Model instanceof module.exports.sequelize.Sequelize.Model){
       return item.Model
     }else{
       return item
@@ -64,7 +60,7 @@ let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
     }, false);
   }).then(res => {
     if(res){
-      return Promise.resolve(res);
+      return Promise.resolve(forItem);
     }else{
       return Promise.reject(new AuthorizationError("Not allowed!"));
     }

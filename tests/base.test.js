@@ -29,7 +29,8 @@ describe('Hooch', function(){
 
 	it('should reject undefined permit requests', function(done){
 		hooch.allow({user: 'user', isAllowedTo: 'undefined.permit', forItem: "something"}).then(res => {
-			assert.deepEqual(res, false);
+			assert(false)
+		}).catch(hooch.AuthorizationError, function(err){
 			done();
 		})
 	});

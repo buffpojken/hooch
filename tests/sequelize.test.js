@@ -9,6 +9,8 @@ let Project = sequelize.define('Project', {
 	description: Sequelize.TEXT
 })
 
+hooch.sequelize = sequelize
+
 describe('Hooch with Sequelize', function(){
 
 	beforeEach(function(){
@@ -32,9 +34,10 @@ describe('Hooch with Sequelize', function(){
 	it('should reject for instances', function(done){
 		let project = Project.build({})
 		hooch.allow({user: "user", isAllowedTo: 'test.rejected', forItem: project}).then(res => {
-			assert(!res)
+			assert(false)
+		}).catch(hooch.AuthorizationError, function(err){
 			done()
-		})		
+		})
 	})
 
 	afterEach(function(){
