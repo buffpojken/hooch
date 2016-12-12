@@ -62,6 +62,12 @@ let allowed = ({user = user, isAllowedTo = null, forItem = null} = {}) => {
         return returnValue;
       })
     }, false);
+  }).then(res => {
+    if(res){
+      return Promise.resolve(res);
+    }else{
+      return Promise.reject(new AuthorizationError("Not allowed!"));
+    }
   })
 }
 
