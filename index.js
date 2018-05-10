@@ -15,11 +15,17 @@ let resolveIdentity = function(item){
       return item
     }else if(item.Model && item.Model instanceof module.exports.sequelize.Sequelize.Model){
       return item.Model
+    }else if(item instanceof hoochTuple){
+      return item.key
     }else{
       return item
     }
   }else{
-    return item;
+    if(item instanceof hoochTuple){
+      return item.key
+    }else{
+      return item;      
+    }
   }
 }
 
@@ -72,13 +78,32 @@ let _reset = () => {
 }
 
 function AuthorizationError() {
-      this.error = true;
+  this.error = true;
 };
 AuthorizationError.prototype = Object.create(Error.prototype);
+
+function TupleIntegrityError(){
+  this.error = true
+}
+TupleIntegrityError.prototype = Object.create(Error.prototype);
+
+function tupleCreator(key, reference){
+  if((!key || !reference) || (typeof(key) != 'string') || ['string', 'number'].indexOf(typeof(reference)) == -1){
+    throw new TupleIntegrityError("Invalid hooch-tuple");
+    return;
+  }
+  return new hoochTuple(key, reference)
+}
+
+let hoochTuple = function(key, reference){
+  this.key = key
+  this.reference = reference
+}
 
 module.exports = {
   permit: permit, 
   allow: allowed,
   reset: _reset,
+  tuple: tupleCreator,
   AuthorizationError: AuthorizationError
 }
